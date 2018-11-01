@@ -53,8 +53,6 @@ def unscented_transform(sigmas, Wm, Wc, noise_cov=None,
         covariance of the sigma points after passing throgh the transform.
     Examples
     --------
-    See my book Kalman and Bayesian Filters in Python
-    https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python
     """
 
     kmax, n = sigmas.shape
