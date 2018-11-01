@@ -7,10 +7,9 @@ class MerweScaledSigmaPoints(object):
 
     """
     Generates sigma points and weights according to Van der Merwe's
-    2004 dissertation[1] for the UnscentedKalmanFilter class.. It
+    2004 dissertation for the UnscentedKalmanFilter class.. It
     parametizes the sigma points using alpha, beta, kappa terms, and
     is the version seen in most publications.
-    Unless you know better, this should be your default choice.
     Parameters
     ----------
     n : int
@@ -24,20 +23,6 @@ class MerweScaledSigmaPoints(object):
     kappa : float, default=0.0
         Secondary scaling parameter usually set to 0 according to [4],
         or to 3-n according to [5].
-    sqrt_method : function(ndarray), default=scipy.linalg.cholesky
-        Defines how we compute the square root of a matrix, which has
-        no unique answer. Cholesky is the default choice due to its
-        speed. Typically your alternative choice will be
-        scipy.linalg.sqrtm. Different choices affect how the sigma points
-        are arranged relative to the eigenvectors of the covariance matrix.
-        Usually this will not matter to you; if so the default cholesky()
-        yields maximal performance. As of van der Merwe's dissertation of
-        2004 [6] this was not a well reseached area so I have no advice
-        to give you.
-        If your method returns a triangular matrix it must be upper
-        triangular. Do not use numpy.linalg.cholesky - for historical
-        reasons it returns a lower triangular matrix. The SciPy version
-        does the right thing.
     subtract : callable (x, y), optional
         Function that computes the difference between x and y.
         You will have to supply this if your state variable cannot support
@@ -51,12 +36,6 @@ class MerweScaledSigmaPoints(object):
         weight for each sigma point for the covariance
     Examples
     --------
-    See my book Kalman and Bayesian Filters in Python
-    https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python
-    References
-    ----------
-    .. [1] R. Van der Merwe "Sigma-Point Kalman Filters for Probabilitic
-           Inference in Dynamic State-Space Models" (Doctoral dissertation)
     """
 
 
