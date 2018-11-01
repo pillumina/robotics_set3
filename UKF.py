@@ -12,12 +12,10 @@ from helper import pretty_str
 
 
 class UnscentedKalmanFilter(object):
-    # pylint: disable=too-many-instance-attributes
-    # pylint: disable=invalid-name
     r"""
     Implements the Scaled Unscented Kalman filter (UKF) as defined by
-    Simon Julier in [1], using the formulation provided by Wan and Merle
-    in [2]. This filter scales the sigma points to avoid strong nonlinearities.
+    Simon Julier, using the formulation provided by Wan and Merle
+    in. This filter scales the sigma points to avoid strong nonlinearities.
     Parameters
     ----------
     dim_x : int
@@ -64,18 +62,6 @@ class UnscentedKalmanFilter(object):
         Function that computes the mean of the provided sigma points
         and weights. Use this if your state variable contains nonlinear
         values such as angles which cannot be summed.
-        .. code-block:: Python
-            def state_mean(sigmas, Wm):
-                x = np.zeros(3)
-                sum_sin, sum_cos = 0., 0.
-                for i in range(len(sigmas)):
-                    s = sigmas[i]
-                    x[0] += s[0] * Wm[i]
-                    x[1] += s[1] * Wm[i]
-                    sum_sin += sin(s[2])*Wm[i]
-                    sum_cos += cos(s[2])*Wm[i]
-                x[2] = atan2(sum_sin, sum_cos)
-                return x
     z_mean_fn : callable  (sigma_points, weights), optional
         Same as x_mean_fn, except it is called for sigma points which
         form the measurements after being passed through hx().
@@ -86,14 +72,6 @@ class UnscentedKalmanFilter(object):
         subtraction, such as angles (359-1 degreees is 2, not 358). x and y
         are state vectors, not scalars. One is for the state variable,
         the other is for the measurement state.
-        .. code-block:: Python
-            def residual(a, b):
-                y = a[0] - b[0]
-                if y > np.pi:
-                    y -= 2*np.pi
-                if y < -np.pi:
-                    y = 2*np.pi
-                return y
     Attributes
     ----------
     x : numpy.array(dim_x)
@@ -120,32 +98,6 @@ class UnscentedKalmanFilter(object):
         Kalman gain
     y : numpy.array
         innovation residual
-    log_likelihood : scalar
-        Log likelihood of last measurement update.
-    likelihood : float
-        likelihood of last measurment. Read only.
-        Computed from the log-likelihood. The log-likelihood can be very
-        small,  meaning a large negative value such as -28000. Taking the
-        exp() of that results in 0.0, which can break typical algorithms
-        which multiply by this value, so by default we always return a
-        number >= sys.float_info.min.
-    mahalanobis : float
-        mahalanobis distance of the measurement. Read only.
-    inv : function, default numpy.linalg.inv
-        If you prefer another inverse function, such as the Moore-Penrose
-        pseudo inverse, set it to that instead:
-        .. code-block:: Python
-            kf.inv = np.linalg.pinv
-    Examples
-    --------
-    Simple example of a linear order 1 kinematic filter in 2D. There is no
-    need to use a UKF for this example, but it is easy to read.
-
-    For in depth explanations see my book Kalman and Bayesian Filters in Python
-    https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python
-    Also see the filterpy/kalman/tests subdirectory for test code that
-    may be illuminating.
-
     """
 
     def __init__(self, dim_x, dim_z, dt, hx, fx, points,
