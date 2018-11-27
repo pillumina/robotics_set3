@@ -87,3 +87,4 @@ The resources in UKF_ref folder are unused in my solutions
 # Evaluation
 
 ![Change speeds of two wheels along teh time](EKF_traj.PNG)
+The initial point of two-wheeled robot is at (0,0), then I tweak the speeds of two wheels respectively to make this robot rotate or keep going straight. The centers of red/blue ellipses are the old/new (x,y) state of robot, which is the mean of the covariance. The whole ellipses are plotted by inputing the covariance matrix (matrix P in this case). The black line is the moving trajectory of robot.   
