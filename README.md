@@ -16,7 +16,7 @@ The resources in UKF_ref folder are unused in my solutions
 
 ## Extended Kalman Filter(EKF)
 '''
-  def res(self, msr):
+    def res(self, msr):
         res = msr - self.H.dot(self.cur_state)
         res[2] = res[2] % (2*np.pi)
         if res[2] > np.pi:
@@ -41,7 +41,6 @@ The resources in UKF_ref folder are unused in my solutions
         M = np.array([[self.motor_spd**2, 0], [0, self.motor_spd**2]])
         self.P = np.dot(state_dev, self.P).dot(state_dev.T) + np.dot(input_dev, M).dot(input_dev.T)
         self.t = self.t + 1
-
 '''
 
 # Evaluation
