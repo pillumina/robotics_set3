@@ -15,7 +15,7 @@ The resources in UKF_ref folder are unused in my solutions
 ## Define the system model
 
 ## Extended Kalman Filter(EKF)
-'''python
+'''
   def res(self, msr):
         res = msr - self.H.dot(self.cur_state)
         res[2] = res[2] % (2*np.pi)
