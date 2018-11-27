@@ -3,7 +3,8 @@ from numpy.linalg import inv
 import random
 import matplotlib.pyplot as plt
 import sympy as sy
-from filterpy.stats import plot_covariance_ellipse
+from filterpy.stats import plot_covariance
+plt.style.use('ggplot')
 
 class Robot():
     def __init__(self):
@@ -23,7 +24,9 @@ class Robot():
         self.func = self.symolize(x_pos, y_pos, theta, l_spd, r_spd, radius, d, t)
         self.state_dev = self.func.jacobian(sy.Matrix([x_pos, y_pos, theta]))
         self.input_dev = self.func.jacobian(sy.Matrix([l_spd, r_spd]))
-        self.cur_state = np.array([0,500,7*np.pi/4])
+
+        # define the initial state of the robot.
+        self.cur_state = np.array([0, 0 ,np.pi/4])
         self.theta = self.cur_state[2]
         self.speed = np.array([0, 0])
         self.l_spd = l_spd
@@ -93,11 +96,11 @@ class Robot():
         state_with_noise = cur_state + np.sqrt(self.noise).dot(np.random.randn(3))
         return state_with_noise
 
-def Universe(robot, inc_time, stop_time):
+def Universe(robot, inc_time, stop_time, Change_Speed):
     cur_state = robot.cur_state
     motor_spd = robot.motor_spd
     rr = robot.rr
-    spd = np.array((np.pi/2, np.pi/2))
+    # spd = np.array((np.pi/2, np.pi/2))
     length = 750
     width = 500
     overall_refresh = rr / inc_time
@@ -106,17 +109,78 @@ def Universe(robot, inc_time, stop_time):
     x_old, y_old = [], []
     x_new, y_new = [], []
     x_msr, y_msr = [], []
+    # the control step controls the frequency of plotted point of robot's state.
     ctrl_steps = 20
     plt.figure(figsize=(20, 15))
-    full_time = int(stop_time/inc_time)
+    full_time = int(stop_time//inc_time)
+
+
+    # the speed of two wheels.
+    spd = np.array((np.pi/2, np.pi/2))
 
     for i in range(full_time):
+        if Change_Speed:
+            if i >= 100:
+                spd = np.array([1.5, 1])
+            if i >= 150:
+                spd = np.array([1, 1.5])
+            if i >= 200:
+                spd = np.array([1, 1])
+            if i >= 300:
+                spd = np.array([2, 1])
+            if i >= 400:
+                spd = np.array([1, 2])
+            if i >= 450:
+                spd = np.array([1, 1.2])
+
         real_spd = spd + motor_spd * np.random.randn(2)
         cur_state = robot.new_state(cur_state, real_spd, inc_time)
         cur_x = cur_state[0]
         cur_y = cur_state[1]
         x_points.append(cur_x)
         y_points.append(cur_y)
+
+
+        # Add noise to current state and update the state of robot with incremental steps of overall_refresh.
+        if i % overall_refresh == 0:
+            # plot the old state info if iter number reaches ctrl_steps value.
+            if i % ctrl_steps == 0:
+                plot_covariance((robot.cur_state[0], robot.cur_state[1]), robot.P[0:2, 0:2], std=6, edgecolor='r', facecolor='r', alpha=0.4)
+            robot.pred(spd)
+            x_old.append(robot.cur_state[0])
+            y_old.append(robot.cur_state[1])
+            # add noise based on the current state.
+            cur_state_noise = robot.add_noise(cur_state)
+            # add noise to the current state and take it as the measurement.
+            x_msr.append(cur_state_noise[0])
+            y_msr.append(cur_state_noise[1])
+            # use current state after adding noise to calculate the residual.
+            res = robot.res(cur_state_noise)
+            # use the residual to update robot movement and state info.
+            robot.update(res)
+            # get new state info
+            x_new.append(robot.cur_state[0])
+            y_new.append(robot.cur_state[1])
+            # plot the new state info
+            if i % ctrl_steps == 0:
+                plot_covariance((robot.cur_state[0], robot.cur_state[1]), robot.P[0:2, 0:2], std=6, edgecolor='b', facecolor='b', alpha=1)
+
+
+    plt.xlim((0, length))
+    plt.ylim((0, width))
+    plt.plot(x_points, y_points, 'ko', linewidth=0.5, markersize=1)
+    plt.xlabel('Length of Environment')
+    plt.ylabel('Width of Environment')
+    plt.title('EKF based two wheeled robot moving trajectory')
+    plt.show()
+    # plt.savefig('EKF_traj.jpg')
+
+if __name__ == "__main__":
+    agent = Robot()
+    inc_time = 0.1
+    stop_time = 100
+    Change_Spd = True
+    Universe(agent, inc_time, stop_time, Change_Spd)
 
 
 
