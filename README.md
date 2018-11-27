@@ -13,6 +13,36 @@ The resources in UKF_ref folder are unused in my solutions
 
 # Mathematical Setup
 ## Define the system model
+'''python
+
+    def symbolize(self,x_pos, y_pos, theta, l_spd, r_spd, radius, d, t):
+        func = sy.Matrix([[x_pos+1/2*sy.cos(theta)*(l_spd+r_spd)*radius*t], [y_pos+1/2*sy.sin(theta)*(l_spd+r_spd)*radius*t],
+                          [theta+(r_spd-l_spd)*radius/d*t]])
+        return func
+
+    def init_dic(self, x_pos, y_pos, theta, l_spd, r_spd, radius, d, t):
+        dic = {}
+        dic[x_pos] = self.cur_state[0]
+        dic[y_pos] = self.cur_state[1]
+        dic[theta] = self.cur_state[2]
+        dic[l_spd] = self.speed[0]
+        dic[r_spd] = self.speed[1]
+        dic[radius] = self.radius
+        dic[d] = self.wheels_d
+        dic[t] = self.rr
+        return dic
+
+    def new_state(self, cur_state, spd, rr):
+        l_spd, r_spd = spd[0], spd[1]
+        theta = cur_state[2]
+        v = 0.5 * self.radius * (l_spd + r_spd)
+        l_dis = rr * l_spd
+        r_dis = rr * r_spd
+        update = np.array((sy.cos(theta)*v*rr, sy.sin(theta)*v*rr, (r_dis-l_dis)/1.5))
+        new_state = cur_state + update
+        return new_state
+
+'''
 
 ## Extended Kalman Filter(EKF)
 
