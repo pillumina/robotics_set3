@@ -9,3 +9,11 @@ Individually
 The resources in UKF_ref folder are unused in my solutions
 ## 0(d) & 0(e)
 100% contribution from one person
+
+
+# Mathematical Setup
+## Define the system model
+
+## Extended Kalman Filter(EKF)
+
+# Evaluation
