@@ -13,8 +13,15 @@ The resources in UKF_ref folder are unused in my solutions
 
 # Mathematical Setup
 ## Define the system model
-'''python
-
+'''
+    
+    
+    
+    x_pos, y_pos, theta, l_spd, r_spd, radius, d, t = sy.symbols('x_pos, y_pos, theta, l_spd, r_spd, radius, d, t')
+    self.func = self.symbolize(x_pos, y_pos, theta, l_spd, r_spd, radius, d, t)
+    self.state_dev = self.func.jacobian(sy.Matrix([x_pos, y_pos, theta]))
+    self.input_dev = self.func.jacobian(sy.Matrix([l_spd, r_spd]))
+     
     def symbolize(self,x_pos, y_pos, theta, l_spd, r_spd, radius, d, t):
         func = sy.Matrix([[x_pos+1/2*sy.cos(theta)*(l_spd+r_spd)*radius*t], [y_pos+1/2*sy.sin(theta)*(l_spd+r_spd)*radius*t],
                           [theta+(r_spd-l_spd)*radius/d*t]])
